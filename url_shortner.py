@@ -90,7 +90,7 @@ def create_app(db):
 
         return render_template('main.html')
     
-    @app.route('/add_url', methods=['POST'])
+    @app.route('/short-url', methods=['POST'])
     def add_url():
         """ Get original url from user and store it in db along with short url. """
 
