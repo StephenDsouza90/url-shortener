@@ -3,7 +3,7 @@ import flask
 import waitress
 import string
 
-from random import choices
+from math import floor
 from sqlalchemy import Column, String, Integer, Boolean, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
@@ -55,61 +55,80 @@ class SQLiteBackend(object):
         connection.close()
 
 
-class URL(Base, SQLiteBackend):
+class URL(Base):
     """ Represents URL database. """
 
-    __tablename__ = 'url_database'
+    __tablename__ = 'url_store'
     id = Column(Integer(), primary_key=True)
-    original_url = Column(String(32), nullable=False)
-    short_url = Column(String(5), nullable=False, unique=True)
+    original_url = Column(String(), nullable=False)
+    short_url = Column(String())
 
-    def __init__(self, **kwargs):
-        """ Extend URL class to generate short url. """
 
-        super().__init__(**kwargs)
-        self.short_url = self.generate_short_url()
-        
-    def generate_short_url(self):
-        """ Generate character randomly and 
-            set it to be short URL. """
+def generate_short_url(num):
+    base = string.digits + string.ascii_letters
+    base_len = len(base)
 
-        char = string.digits + string.ascii_letters
-        short_url = ''.join(choices(char, k=5))
-        return short_url
+    if base_len <= 0 or base_len > 62:
+        return 0
+    char = base[num % base_len]
+    quotient = floor(num / base_len)
+    while quotient:
+        mod = quotient % base_len
+        quotient = floor(quotient / base_len)
+        char = base[mod] + char
+    return char
 
 
 def create_app(db):
     """ Creates server app. """
 
     app = Flask('URL Shortner')
-
+    
     @app.route('/')
     def main():
-        """ Main page for user to 
-            submit url to be shortened. """
+        """ Submit url for shortening. """
 
         return render_template('main.html')
-    
-    @app.route('/short-url', methods=['POST'])
-    def add_url():
-        """ Get original url from user and 
-            store it in db along with short url. """
+
+    def add_original_url():
+        """ Add original url in db. """
 
         session = db.Session()
         original_url = request.form['original_url']
         url = URL(original_url=original_url)
         session.add(url)
         session.commit()
+        return url
+
+    def update_short_url():
+        """ Query last row id, generate short url and 
+            update it in db. """
+
+        session = db.Session()
+        get_id = session.query(URL).order_by(URL.id.desc()).first()
+        short_url = generate_short_url(get_id.id)
+        session.query(URL).filter(URL.id==get_id.id).update(
+                    {URL.short_url: short_url}, 
+                    synchronize_session=False)
+        session.commit()
+        return short_url
+
+    @app.route('/short-url', methods=['POST'])
+    def get_short_url():
+        """ Get original url and short url 
+            and display it for the user. """
+
+        original_url = add_original_url()
+        short_url = update_short_url()
         return render_template(
             'short_url.html', 
-            short_url=url.short_url, 
-            original_url=url.original_url
+            short_url=short_url, 
+            original_url=original_url.original_url
             )
 
     @app.route('/<short_url>')
     def redirect_url(short_url):
-        """ Redirects short url to original url. 
-            Get original url from querying db. """
+        """ Redirects short url to original url. """
 
         session = db.Session()
         original = session.query(URL).filter_by(
@@ -124,7 +143,6 @@ def create_app(db):
         """ Return page not found. """
 
         return render_template('error.html'), 404
-
     return app
 
 
