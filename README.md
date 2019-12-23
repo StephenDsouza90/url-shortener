@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Short URL refers to shortening a long url so that users can use that short url instead of the original long url on websites, chats, e-mails, post, tweets etc.
+Short URL refers to shortening a long url so users can use that short url instead of the original long url on websites, chats, e-mails, post, tweets etc.
 
 In this application, a user can provide a long url which is shortened. The short url when used is redirected to the original url.
 
@@ -18,19 +18,21 @@ The database contains an ID, Original url and Short url column which stores the 
 
 ### Short URL
 
-The short url is create with Base64 (digits, lowercase and uppercase characters) and creates a combination of 5 characters long.
+The short url is created with Base62 which includes 0 - 9 digits, a - z lowercase and A - Z uppercase characters. 
+
+In order to get the index characters from the Base, the mod is calculated by a number (original url's id) and base lenght (62). As the short url has to remains unique, a while loop is used to get the next index in the Base by taking the mod of the quotient and base length. The quotient is then calculated again to bring it to zero and the index are concatenated to form the short url. 
 
 ### Functions and Routes
 
 1. Main()
 
-The route in the main function allows users to submit a long url for shortening. Once the user submits the url, the page changes to the add url function.
+The route in the main function allows users to submit a long url for shortening. Once the user submits the url, the page changes to the get short url function.
 
 ![Main page](https://github.com/StephenDsouza90/url-shortner/blob/shortner/screenshots/main.png)
 
-2. Add_url()
+2. Get_short_url()
 
-In the add_url function, the original long url is stored in the database along with the short url. The short-url route displays the original url and short url to the user.
+In the get_short_url function, first the original long url is stored in the database, then the id (the number) of that original url is used to generate the short url via the Base62 system. Once the short url is generated, it is updated in the db.
 
 ![Short url](https://github.com/StephenDsouza90/url-shortner/blob/shortner/screenshots/short_url.png)
 
