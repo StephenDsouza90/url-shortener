@@ -86,7 +86,7 @@ def create_app(db):
     
     @app.route('/')
     def main():
-        """ Submit url for shortening. """
+        """ Submit a url for shortening. """
 
         return render_template('main.html')
 
@@ -100,14 +100,12 @@ def create_app(db):
         session.commit()
         return url
 
-    def update_short_url():
-        """ Query last row id, generate short url and 
-            update it in db. """
+    def update_short_url(id):
+        """ Generate short url and update it in db. """
 
         session = db.Session()
-        get_id = session.query(URL).order_by(URL.id.desc()).first()
-        short_url = generate_short_url(get_id.id)
-        session.query(URL).filter(URL.id==get_id.id).update(
+        short_url = generate_short_url(id)
+        session.query(URL).filter(URL.id==id).update(
                     {URL.short_url: short_url}, 
                     synchronize_session=False)
         session.commit()
@@ -115,11 +113,10 @@ def create_app(db):
 
     @app.route('/short-url', methods=['POST'])
     def get_short_url():
-        """ Get original url and short url 
-            and display it for the user. """
+        """ Get original url and short url """
 
         original_url = add_original_url()
-        short_url = update_short_url()
+        short_url = update_short_url(original_url.id)
         return render_template(
             'short_url.html', 
             short_url=short_url, 
