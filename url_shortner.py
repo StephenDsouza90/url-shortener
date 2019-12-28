@@ -125,19 +125,7 @@ def create_app(db):
             short_url=short_url, 
             original_url=original_url.original_url
             )
-
-    @app.route('/<short_url>')
-    def redirect_url(short_url):
-        """ Redirects short url to original url. """
-
-        session = db.Session()
-        original = session.query(URL).filter_by(
-            short_url=short_url
-            ).first()
-        if not original:
-            return page_not_found(404)
-        return redirect(original.original_url) 
-        
+       
     @app.errorhandler(404)
     def page_not_found(error):
         """ Return page not found. """
