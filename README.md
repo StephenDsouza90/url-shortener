@@ -36,11 +36,7 @@ In the get_short_url function, first the original long url is stored in the data
 
 ![Short url](https://github.com/StephenDsouza90/url-shortner/blob/shortner/screenshots/short_url.png)
 
-3. Redirect_url()
-
-When the user uses the redirect (short_url) route, the redirect function maps the short url to the original url. If the short url does not exist then it will return a 404 (not found).
-
-4. Page_not_found()
+3. Page_not_found()
 
 If the short url does not exist or not created then a 404 page will return.
 
