@@ -1,3 +1,4 @@
+import os
 import time
 import flask
 import waitress
@@ -14,27 +15,24 @@ from flask import Flask, json, render_template, request, redirect
 Base = declarative_base()
 
 
-class SQLiteBackend(object):
-    """ SQLite Backend that manages 
+class PostgresBackend(object):
+    """ Postgres Backend that manages 
         creating the engine and session. """
 
-    def __init__(self, create_db):
+    def __init__(self, db_url):
         self.engine = None
         self.Session = sessionmaker(
             autocommit=False, 
             expire_on_commit=False
             )
-        self.setup_engine(create_db)
+        self.setup_engine(db_url)
 
-    def setup_engine(self, create_db=None):
+    def setup_engine(self, db_url=None):
         """ Setup engine, return engine if exist. """
 
         if self.engine:
             return
-        self.engine = create_engine(
-            create_db, 
-            echo=False, 
-            pool_recycle=3600)
+        self.engine = create_engine(db_url)
         self.Session.configure(bind=self.engine)
 
     def bootstrap(self):
@@ -51,7 +49,7 @@ class SQLiteBackend(object):
         if not connection:
             raise Exception("Couldn't connect to DB Server even after retries!")
 
-        Base.metadata.create_all(self.engine)
+        Base.metadata.create_all(bind=self.engine)
         connection.close()
 
 
@@ -135,9 +133,23 @@ def main():
     """ Creates and connects to db.
         Run server. """
     
-    db_url = "sqlite:///short_url.db"
-    print(f'Connecting to {db_url}')
-    db = SQLiteBackend(db_url)
+    postgres = 'postgres+psycopg2'
+    user_name = 'admin'
+    password = 'admin123'
+    localhost = 'localhost'
+    postgres_port = '5432'
+    database_name = 'postgres'
+    os.environ['DATABASE_URI'] = '{}://{}:{}@{}:{}/{}'.format(
+	postgres,  
+	user_name, 
+	password, 
+	localhost, 
+	postgres_port,
+	database_name
+	)
+    print("Connecting to {}".format(database_name))
+    db_url = os.getenv('DATABASE_URI')
+    db = PostgresBackend(db_url)
     db.bootstrap()
     app = create_app(db)
     waitress.serve(app, host='0.0.0.0', port=8080)
