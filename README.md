@@ -6,15 +6,37 @@ The term short url refers to creating a link which redirects to a long url when 
 
 In this application, a short url is created by inputting a long url. The short url when used is redirected to the original url.
 
+## Classes and Database
+
+### Class PostgresBackend 
+
+This app uses a PostgreSQL "Postgres" database server to store url records. Postgres is an Object-Relational Database Management System (ORDBMS) that can store data in a secure way using the best practices. Records can be retrived from the same computer or another computer across a network.
+ 
+The PostgresBackend class is responsible for creating the engine, managing the connection to the database and handling the session. The bootstrap method in particular, is responsible for establishing a connection to the DB and creating the columns in the table.
+
+### Class URL
+
+The class URL inherits the Base object which is a collection of Table objects and their associated schema constructs. 
+
+This class has the table name and contains an ID, Original url and Short url column which stores the respective urls.
+
+## Database
+
+To create a database in postgres, the following command is used.
+
+```
+>> docker run --rm -it -p 5432:5432 --name postgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin123 postgres
+```
+
+This app uses the postgres image from docker hub.
+
+To run the database, the following command is used.
+
+```
+>> psql -h localhost -d postgres -U admin -W
+```
+
 ## The Application
-
-### SQLiteBackend
-
-The SQLiteBackend is responsible for creating the columns in the table and making a connection to the database.
-
-### Database
-
-The database contains an ID, Original url and Short url column which stores the respective urls.
 
 ### Generating Short URL
 
@@ -43,10 +65,8 @@ If the short url does not exist or not created then a 404 page will return.
 ## How to run locally
 
 ```
-
 >> python url_shortner.py
 
-Connecting to sqlite:///short_url.db
-Serving on http://StephenDsouza:8080
-
+Connecting to postgres
+Serving on http://0.0.0.0:8080
 ```
