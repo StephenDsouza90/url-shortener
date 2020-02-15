@@ -10,7 +10,7 @@ In this application, a short url is created by inputting a long url. The short u
 
 ### Class PostgresBackend 
 
-This app uses a PostgreSQL "Postgres" database server to store url records. Postgres is an Object-Relational Database Management System (ORDBMS) that can store data in a secure way using the best practices. Records can be retrived from the same computer or another computer across a network.
+This app uses a PostgreSQL "Postgres" database server to store shortened url records. Postgres is an Object-Relational Database Management System (ORDBMS) that can store data in a secure way while using the best practices. Records can be retrived from the same computer or another computer across a network.
  
 The PostgresBackend class is responsible for creating the engine, managing the connection to the database and handling the session. The bootstrap method in particular, is responsible for establishing a connection to the DB and creating the columns in the table.
 
@@ -22,13 +22,13 @@ This class has the table name and contains an ID, Original url and Short url col
 
 ## Database
 
-To create a database in postgres, the following command is used.
+To create a database in postgres via postgres image from docker hub, the following command is used.
 
 ```
->> docker run --rm -it -p 5432:5432 --name postgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin123 postgres
+>> docker run --rm -it -p 5432:5432 --name postgres -e POSTGRES_USER=user_name -e POSTGRES_PASSWORD=user_password postgres
 ```
 
-This app uses the postgres image from docker hub.
+Where, the container running is "-- name postgres", a "user name" and "password" has been given and listenes on postgres "port". 
 
 To run the database, the following command is used.
 
@@ -67,6 +67,6 @@ If the short url does not exist or not created then a 404 page will return.
 ```
 >> python url_shortner.py
 
-Connecting to postgres
+Connecting to PostgreSQL..
 Serving on http://0.0.0.0:8080
 ```
