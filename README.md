@@ -65,7 +65,7 @@ If the short url does not exist or not created then a 404 page will return.
 ## How to run locally
 
 ```
->> python -e DB_URL="postgres+psycopg2://<user_name>:<user_password>@172.17.0.1:5432/<database_name>" url_shortner.py
+>> DB_URL="postgres+psycopg2://<user_name>:<user_password>@localhost:5432/<database_name>" python url_shortner.py
 
 Connecting to PostgreSQL..
 Serving on http://0.0.0.0:8080
