@@ -8,11 +8,13 @@ In this application, a short url is created by inputting a long url. The short u
 
 ## Classes
 
-### PostgresBackend 
+This app can work with any SQL backend (such as sqlite, postgres, mysql). If you were to use a postgres database, this is how to use the app.
 
-This app uses a PostgreSQL "Postgres" database server to store shortened url records. Postgres is an Object-Relational Database Management System (ORDBMS) that can store data in a secure way while using the best practices. Records can be retrived from the same computer or another computer across a network.
+### SQLBackend 
+
+A PostgreSQL "Postgres" database server is an Object-Relational Database Management System (ORDBMS) that can store data in a secure way while using the best practices. Records can be retrived from the same computer or another computer across a network.
  
-The PostgresBackend class is responsible for creating the engine, managing the connection to the database and handling the session. The bootstrap method in particular, is responsible for establishing a connection to the DB and creating the columns in the table.
+The SQLBackend class is responsible for creating the engine, managing the connection to the database and handling the session. The bootstrap method in particular, is responsible for establishing a connection to the DB and creating the columns in the table.
 
 ### URL
 
@@ -81,4 +83,7 @@ Build the image:
 Run the container hosting the url shortener app:
 ```
 >> docker run --rm -it -p 8080:8080 --name urlshortener -e DB_URL="postgres+psycopg2://<user_name>:<user_password>@172.17.0.1:5432/<database name>" urlshortener
+
+Connecting to PostgreSQL..
+Serving on http://0.0.0.0:8080
 ```
