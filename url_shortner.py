@@ -15,9 +15,9 @@ from flask import Flask, json, render_template, request, redirect
 Base = declarative_base()
 
 
-class PostgresBackend(object):
-    """ Postgres Backend that manages 
-        creating the engine and session. """
+class SQLBackend(object):
+    """ SQLBackend manages creating
+        the engine and session. """
 
     def __init__(self, db_url):
         self.engine = None
@@ -135,7 +135,7 @@ def main():
     """ Creates and connects to db.
         Run server. """
 
-    db = PostgresBackend(os.environ.get('DB_URL'))
+    db = SQLBackend(os.environ.get('DB_URL'))
     print("Connecting to PostgreSQL..")
     db.bootstrap()
     app = create_app(db)
